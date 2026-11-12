@@ -51,16 +51,11 @@ def mark_end(ax, x_vals, y_vals, col, off=0.0):
 def main():
     plt.rcParams.update({"font.sans-serif": "DejaVu Sans"})
     fig, axes = plt.subplots(3, 2, figsize=(12.6, 17.8), dpi=300, facecolor="white")
-    plt.subplots_adjust(left=0.06, right=0.95, top=0.89, bottom=0.06, hspace=0.55, wspace=0.20)
+    plt.subplots_adjust(left=0.06, right=0.95, top=0.92, bottom=0.06, hspace=0.55, wspace=0.20)
     ax1, ax2, ax3, ax4, ax5, ax6 = axes.flatten()
 
-    monate = ("Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember")
-    now = datetime.now()
-    m_txt = list(monate).pop(now.month - 1)
-    fig.text(0.06, 0.955, "Die Deutsche Konjunktur auf einen Blick", fontsize=20, fontweight="bold", color="#0F172A")
-    fig.text(0.06, 0.935, f"Konjunkturindikatoren & Preise | Stand: {now.day}. {m_txt} {now.year}", fontsize=10.5, color="#475569")
-    fig.add_artist(plt.Line2D((0.06, 0.95), (0.925, 0.925), color="#1E3A8A", lw=2.0))
 
+    
     xl_bip = ("2021","2022","2023","2024","2025","","Q1 23","Q2 23","Q3 23","Q4 23","Q1 24","Q2 24","Q3 24","Q4 24","Q1 25","Q2 25","Q3 25","Q4 25")
     xi = np.arange(len(xl_bip))
 
