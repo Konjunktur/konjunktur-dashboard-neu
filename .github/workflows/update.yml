@@ -1,0 +1,42 @@
+name: Konjunktur-Dashboard aktualisieren
+
+on:
+  schedule:
+    - cron: '0 8 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repository klonen
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Bibliotheken installieren
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Grafik erstellen
+        run: python scripts/build_dashboard.py
+
+      - name: Grafik speichern
+        run: |
+          git config --local user.email "github-actions[bot]@://github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -f output/dashboard.png
+          if ! git diff --staged --quiet; then
+            git commit -m "Update Dashboard"
+            git push
+          fi
