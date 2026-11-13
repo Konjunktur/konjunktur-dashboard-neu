@@ -32,8 +32,8 @@ def get_bbk(key, n=13, scale=1.0, yoy=False):
         return pd.Series(dtype=float)
 
 def get_destatis(table):
-    if not D_USER or not D_PASS:
-        print("Destatis Hinweis: DESTATIS_USER oder DESTATIS_PASS nicht gesetzt.")
+    if not D_USER:
+        print("Destatis Hinweis: DESTATIS_USER nicht gesetzt.")
         return pd.DataFrame()
     headers = {
         "username": D_USER,
@@ -48,12 +48,27 @@ def get_destatis(table):
         "language": "de"
     }
     try:
-        r = requests.post(G_URL, headers=headers, data=data, timeout=15)
+        r = requests.post(G_URL, headers=headers, data=data, timeout=30)
         r.encoding = "utf-8"
-        if r.status_code != 200 or len(r.text) < 200 or "Fehler" in r.text[:300]:
-            print(f"Destatis Status {r.status_code} ({table}):", r.text[:250])
+        if r.status_code != 200:
+            print(f"Destatis HTTP {r.status_code} ({table}):", r.text[:250])
             return pd.DataFrame()
-        return pd.read_csv(io.StringIO(r.text), sep=";", decimal=",")
+        
+        if r.text.strip().startswith("{"):
+            js = r.json()
+            status_code = js.get("Status", {}).get("Code")
+            if status_code not in (0, 22):
+                print(f"Destatis API Status {status_code} ({table}):", js.get("Status", {}).get("Content"))
+                return pd.DataFrame()
+            csv_text = js.get("Object", {}).get("Content", "")
+        else:
+            csv_text = r.text
+
+        if len(csv_text) < 200:
+            print(f"Destatis Hinweis ({table}): Leere Antwort erhalten.")
+            return pd.DataFrame()
+
+        return pd.read_csv(io.StringIO(csv_text), sep=";", decimal=",")
     except Exception as e:
         print(f"Destatis Fehler ({table}):", e)
         return pd.DataFrame()
@@ -142,7 +157,6 @@ def main():
     plt.subplots_adjust(left=0.06, right=0.95, top=0.92, bottom=0.06, hspace=0.55, wspace=0.20)
     ax1, ax2, ax3, ax4, ax5, ax6 = axes.flatten()
 
-    df1 = get_destatis("81000-0011")
         # 1. BIP Entstehung (Originalwerte)
     df1 = get_destatis("81000-0011")
     s_bip_r = _extract_valid_series(df1, {"WERT": [r"^BIP", "Bruttoinlandsprodukt"], "BEREINIGUNG": [r"^-$", "Originalwert", "unbereinigt"], "PREIS": ["PK", "PREIS002", "preisbereinigt"], "EINHEIT": ["VJR", "Vorjahres"]})
@@ -172,8 +186,7 @@ def main():
     ax1.set_xticks(xi1); ax1.set_xticklabels(xl_bip1); ax1.set_xlim(-0.7, len(xi1) - 0.2); set_legend(ax1, ncol=2)
 
     style_panel(ax2, "Bruttoinlandsprodukt: Verwendung", "Veränderung zum Vorjahr in % (preisbereinigt, Originalwerte)", -8, 12, range(-8, 14, 2))
-    df2 = get_destatis("81000-0012")
-       # 2. BIP Verwendung (Originalwerte)
+        # 2. BIP Verwendung (Originalwerte)
     df2 = get_destatis("81000-0012")
     s_bip_n = _extract_valid_series(df2, {"VERWENDUNG": ["^BIP", "Bruttoinlandsprodukt"], "BEREINIGUNG": [r"^-$", "Originalwert", "unbereinigt"], "PREIS": ["JP", "PREIS001", "in jeweiligen Preisen"], "EINHEIT": ["VJR", "Vorjahres"]})
     s_kp    = _extract_valid_series(df2, {"VERWENDUNG": ["KONSUM-PRIV", "Private Konsumausgaben"], "BEREINIGUNG": [r"^-$", "Originalwert", "unbereinigt"], "PREIS": ["PK", "PREIS002"], "EINHEIT": ["VJR", "Vorjahres"]})
