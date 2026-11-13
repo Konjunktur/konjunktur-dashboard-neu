@@ -29,14 +29,14 @@ jobs:
           pip install -r requirements.txt
 
       - name: Grafik erstellen
-      env:
+        env:
           DESTATIS_USER: ${{ secrets.DESTATIS_USER }}
           DESTATIS_PASS: ${{ secrets.DESTATIS_PASS }}
         run: python scripts/build_dashboard.py
 
       - name: Grafik speichern
         run: |
-          git config --local user.email "github-actions[bot]@://github.com"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add -f output/dashboard.png
           if ! git diff --staged --quiet; then
