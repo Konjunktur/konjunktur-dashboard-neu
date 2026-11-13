@@ -209,4 +209,4 @@ fig.text(0.06, 0.953, f"Quellen: Statistisches Bundesamt (Destatis), Deutsche Bu
 fig.savefig("output/dashboard.png", dpi=300)
 plt.close(fig)
 if name == "main":
-main()
+    main()
