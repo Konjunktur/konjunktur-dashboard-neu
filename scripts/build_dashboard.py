@@ -228,63 +228,55 @@ def main():
     style_panel(ax3, "Auftragseingänge", "Volumenindex, Veränderung zum Vorjahr in %", -15, 25, range(-15, 30, 5))
     s_ai = get_bbk("BBDE1.M.DE.Y.AEA1.A2P300000.F.C.I21.A", 13, yoy=True)
     s_ab = get_bbk("BBDE1.M.DE.Y.AEA1.P2XF00000.B2.C.I21.A", 13, yoy=True)
-    if s_ai.empty and s_ab.empty:
-        s_ai = pd.Series((-0.5,0.2,3.8,5.5,5.4,0.8,-3.5,2.2,-3.2,-0.5,10.5,11.4,3.7), index=m13)
-        s_ab = pd.Series((2.5,0.5,18.2,6.2,5.8,4.1,9.5,1.2,21.0,2.5,4.1,4.6,5.2), index=m13)
     idx3 = sorted(set(s_ai.index) | set(s_ab.index))[-13:]
-    s_ai = s_ai.reindex(idx3)
-    s_ab = s_ab.reindex(idx3)
-    ax3.plot(idx3, s_ai.values, color="#1E3A8A", lw=2.1, marker="o", ms=3, label="Auftragseingang Industrie")
-    ax3.plot(idx3, s_ab.values, color="#D97706", lw=2.1, marker="o", ms=3, label="Auftragseingang Bauwirtschaft")
-    mark_end(ax3, idx3, s_ai.values, "#1E3A8A", off=-1.2)
-    mark_end(ax3, idx3, s_ab.values, "#D97706", off=1.2)
-    ax3.set_xlim(-0.5, len(idx3) + 0.5); set_legend(ax3, ncol=2)
+    if idx3:
+        s_ai = s_ai.reindex(idx3)
+        s_ab = s_ab.reindex(idx3)
+        ax3.plot(idx3, s_ai.values, color="#1E3A8A", lw=2.1, marker="o", ms=3, label="Auftragseingang Industrie")
+        ax3.plot(idx3, s_ab.values, color="#D97706", lw=2.1, marker="o", ms=3, label="Auftragseingang Bauwirtschaft")
+        mark_end(ax3, idx3, s_ai.values, "#1E3A8A", off=-1.2)
+        mark_end(ax3, idx3, s_ab.values, "#D97706", off=1.2)
+        ax3.set_xlim(-0.5, len(idx3) + 0.5); set_legend(ax3, ncol=2)
 
     style_panel(ax4, "Produktion & Einzelhandelsumsätze", "Real, Veränderung zum Vorjahr in % (kalenderbereinigt)", -8, 8, range(-8, 10, 2))
     s_pi = get_bbk("BBDE1.M.DE.W.BAA1.A2P300000.G.C.I21.A", 13, yoy=True)
     s_pb = get_bbk("BBDE1.M.DE.W.BAA1.N2F000000.G.C.I21.A", 13, yoy=True)
     s_eh = get_bbk("BBDE1.M.DE.W.GUA1.N2G470000.A.C.I21.A", 13, yoy=True)
-    if s_pi.empty and s_pb.empty and s_eh.empty:
-        s_pi = pd.Series((0.6,-4.1,-0.3,-2.1,-0.6,-2.2,1.6,-4.1,-1.2,0.6,1.0,1.4,-2.6), index=m13)
-        s_pb = pd.Series((-0.5,-6.9,-3.2,-1.0,-2.1,-1.4,-1.2,-1.9,-2.4,-0.5,-1.8,0.8,1.1), index=m13)
-        s_eh = pd.Series((2.0,4.8,4.2,3.8,3.5,5.7,3.8,1.6,1.1,2.0,1.4,2.5,1.1), index=m13)
     idx4 = sorted(set(s_pi.index) | set(s_pb.index) | set(s_eh.index))[-13:]
-    s_pi = s_pi.reindex(idx4)
-    s_pb = s_pb.reindex(idx4)
-    s_eh = s_eh.reindex(idx4)
-    ax4.plot(idx4, s_pi.values, color="#1E3A8A", lw=2.1, marker="o", ms=3, label="Industrieproduktion")
-    ax4.plot(idx4, s_pb.values, color="#D97706", lw=2.1, marker="o", ms=3, label="Bauproduktion")
-    ax4.plot(idx4, s_eh.values, color="#059669", lw=2.1, marker="o", ms=3, label="Einzelhandelsumsätze")
-    mark_end(ax4, idx4, s_pi.values, "#1E3A8A")
-    mark_end(ax4, idx4, s_pb.values, "#D97706", off=0.45)
-    mark_end(ax4, idx4, s_eh.values, "#059669", off=-0.45)
-    ax4.set_xlim(-0.5, len(idx4) + 0.5); set_legend(ax4, ncol=3)
+    if idx4:
+        s_pi = s_pi.reindex(idx4)
+        s_pb = s_pb.reindex(idx4)
+        s_eh = s_eh.reindex(idx4)
+        ax4.plot(idx4, s_pi.values, color="#1E3A8A", lw=2.1, marker="o", ms=3, label="Industrieproduktion")
+        ax4.plot(idx4, s_pb.values, color="#D97706", lw=2.1, marker="o", ms=3, label="Bauproduktion")
+        ax4.plot(idx4, s_eh.values, color="#059669", lw=2.1, marker="o", ms=3, label="Einzelhandelsumsätze")
+        mark_end(ax4, idx4, s_pi.values, "#1E3A8A")
+        mark_end(ax4, idx4, s_pb.values, "#D97706", off=0.45)
+        mark_end(ax4, idx4, s_eh.values, "#059669", off=-0.45)
+        ax4.set_xlim(-0.5, len(idx4) + 0.5); set_legend(ax4, ncol=3)
 
     style_panel(ax5, "Leistungsbilanzsaldo", "Monatlicher Saldo in Mrd. Euro (Originalwerte)", 0, 35, range(0, 40, 5), z=False)
-    s_lb = get_bbk("BBFBOPV.M.N.DE.W1.S1.S1.T.B.CA._Z._Z._Z.EUR._T._X.N.ALL", 13, 0.001)
-    if s_lb.empty: s_lb = pd.Series((12.3,15.4,19.5,19.0,21.8,21.9,19.6,19.0,16.0,12.7,15.3,10.1,10.5), index=m13)
-    s_lb = s_lb.tail(13)
-    bars = ax5.bar(s_lb.index, s_lb.values, width=0.52, facecolor="#DBEAFE", edgecolor="#1E3A8A", lw=1.1, label="Leistungsbilanzsaldo", zorder=2)
-    for b in bars:
-        if pd.notna(b.get_height()):
-            ax5.text(b.get_x()+b.get_width()/2, b.get_height()+0.6, f"{b.get_height():.1f}".replace(".",","), ha="center", fontsize=7.5, color="#1E3A8A", fontweight="bold")
-    set_legend(ax5, ncol=1)
+    s_lb = get_bbk("BBFBOPV.M.N.DE.W1.S1.S1.T.B.CA._Z._Z._Z.EUR._T._X.N.ALL", 13, 0.001).tail(13)
+    if not s_lb.empty:
+        bars = ax5.bar(s_lb.index, s_lb.values, width=0.52, facecolor="#DBEAFE", edgecolor="#1E3A8A", lw=1.1, label="Leistungsbilanzsaldo", zorder=2)
+        for b in bars:
+            if pd.notna(b.get_height()):
+                ax5.text(b.get_x()+b.get_width()/2, b.get_height()+0.6, f"{b.get_height():.1f}".replace(".",","), ha="center", fontsize=7.5, color="#1E3A8A", fontweight="bold")
+        set_legend(ax5, ncol=1)
 
     style_panel(ax6, "Arbeitslosigkeit und Inflation", "Quote bzw. Veränderung zum Vorjahr in % (Originalwerte)", 0, 8, range(0, 10, 2), z=False)
     s_al = get_bbk("BBDL1.M.DE.N.UNE.UBA000.A0000.A01.D00.0.R00.A", 13)
     s_hv = get_bbk("BBDP1.M.DE.N.HVPI.C.A00000.VGJ.LV", 13)
-    if s_al.empty and s_hv.empty:
-        s_al = pd.Series((6.4,6.4,6.3,6.2,6.2,6.3,6.4,6.3,6.2,6.1,6.2,6.6,6.5), index=m13)
-        s_hv = pd.Series((2.6,2.3,2.2,2.1,2.0,1.8,2.1,2.4,2.3,2.6,2.0,2.1,2.0), index=m13)
     idx6 = sorted(set(s_al.index) | set(s_hv.index))[-13:]
-    s_al = s_al.reindex(idx6)
-    s_hv = s_hv.reindex(idx6)
-    ax6.plot(idx6, s_al.values, color="#1E3A8A", lw=2.1, marker="o", ms=3, label="Arbeitslosenquote")
-    ax6.axhline(3.0, color="#0284C7", ls="--", lw=1.4, label="Vollbeschäftigung (3%)")
-    ax6.plot(idx6, s_hv.values, color="#475569", lw=2.1, marker="o", ms=3, label="Inflation (HVPI)")
-    ax6.axhline(2.0, color="#D97706", ls="--", lw=1.4, label="EZB-Inflationsziel (2%)")
-    mark_end(ax6, idx6, s_al.values, "#1E3A8A"); mark_end(ax6, idx6, s_hv.values, "#475569")
-    ax6.set_xlim(-0.5, len(idx6) + 0.5); set_legend(ax6, ncol=2)
+    if idx6:
+        s_al = s_al.reindex(idx6)
+        s_hv = s_hv.reindex(idx6)
+        ax6.plot(idx6, s_al.values, color="#1E3A8A", lw=2.1, marker="o", ms=3, label="Arbeitslosenquote")
+        ax6.axhline(3.0, color="#0284C7", ls="--", lw=1.4, label="Vollbeschäftigung (3%)")
+        ax6.plot(idx6, s_hv.values, color="#475569", lw=2.1, marker="o", ms=3, label="Inflation (HVPI)")
+        ax6.axhline(2.0, color="#D97706", ls="--", lw=1.4, label="EZB-Inflationsziel (2%)")
+        mark_end(ax6, idx6, s_al.values, "#1E3A8A"); mark_end(ax6, idx6, s_hv.values, "#475569")
+        ax6.set_xlim(-0.5, len(idx6) + 0.5); set_legend(ax6, ncol=2)
 
     fig.text(0.06, 0.015, "Quellen: Statistisches Bundesamt, Deutsche Bundesbank", fontsize=8, color="#64748B")
     fig.text(0.95, 0.015, "T.H.", ha="right", fontsize=8, color="#94A3B8")
