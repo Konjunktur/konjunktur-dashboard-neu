@@ -11,7 +11,8 @@ G_URL = "https://destatis.de"
 
 def get_bbk(key, n=13, scale=1.0, yoy=False):
     flow, k = key.split(".", 1)
-    url = f"https://bundesbank.de{flow}/{k}?format=bbk_csv&lang=de"
+    host = "https://api.statistiken." + "bundesbank.de/rest/data/"
+    url = f"{host}{flow}/{k}?format=bbk_csv&lang=de"
     headers = {"User-Agent": "Mozilla/5.0"}
     try:
         r = requests.get(url, headers=headers, timeout=15)
@@ -19,13 +20,14 @@ def get_bbk(key, n=13, scale=1.0, yoy=False):
         rows = []
         for line in r.text.splitlines():
             parts = line.split(";")
-            if len(parts) >= 2 and len(parts[0].strip()) == 7 and parts[0].strip()[4] == "-":
-                datum = parts[0].strip()
-                val_str = parts[1].strip().replace(",", ".")
-                try:
-                    rows.append((datum, float(val_str)))
-                except ValueError:
-                    continue
+            if len(parts) >= 2:
+                datum, val_str = parts[:2]
+                datum = datum.strip()
+                if len(datum) == 7 and datum[4:5] == "-":
+                    try:
+                        rows.append((datum, float(val_str.strip().replace(",", "."))))
+                    except ValueError:
+                        continue
         if not rows:
             print(f"BBK Keine Datenzeilen ({key}) | Vorschau:", r.text[:150].replace("\n", " "))
             return pd.Series(dtype=float)
@@ -40,6 +42,7 @@ def get_bbk(key, n=13, scale=1.0, yoy=False):
     except Exception as e:
         print(f"Bundesbank Fehler ({key}):", repr(e))
         return pd.Series(dtype=float)
+
 
 
 def get_destatis(table):
