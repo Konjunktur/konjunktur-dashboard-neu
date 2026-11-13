@@ -137,7 +137,13 @@ def main():
         pg    = (4.5,0.8,-2.1,-3.1,-0.8,np.nan,-2.0,-3.2,-3.5,-3.8,-3.1,-2.9,-2.5,-1.5,-0.9,-0.2,0.4,0.2,0.3,0.5)
         bau   = (-1.5,-3.2,-2.5,-3.8,-0.5,np.nan,-2.8,-2.4,-2.9,-3.5,-4.1,-3.9,-3.6,-2.1,-1.2,0.1,0.8,0.5,0.7,0.9)
         hvg   = (4.8,3.8,-1.2,0.4,0.9,np.nan,-1.5,-1.8,-1.2,0.2,0.5,0.6,0.4,1.1,1.2,0.9,0.7,0.6,0.8,0.8)
-    ax1.bar(xi1, bip_r, width=0.52, facecolor="#DBEAFE", edgecolor="#1E3A8A", lw=1.1, label="Reales BIP", zorder=2)
+    bars1 = ax1.bar(xi1, bip_r, width=0.52, facecolor="#DBEAFE", edgecolor="#1E3A8A", lw=1.1, label="Reales BIP", zorder=2)
+    for b in bars1:
+        h = b.get_height()
+        if pd.notna(h):
+            va = "bottom" if h >= 0 else "top"
+            off = 0.25 if h >= 0 else -0.25
+            ax1.text(b.get_x() + b.get_width() / 2, h + off, f"{h:.1f}".replace(".", ","), ha="center", va=va, fontsize=6.8, color="#1E3A8A", fontweight="bold", zorder=4)
     ax1.plot(xi1, pg, color="#D97706", lw=1.9, marker="o", ms=2.5, label="Prod. Gewerbe (o. Bau)", zorder=3)
     ax1.plot(xi1, bau, color="#64748B", lw=1.9, marker="o", ms=2.5, label="Baugewerbe", zorder=3)
     ax1.plot(xi1, hvg, color="#059669", lw=1.9, marker="o", ms=2.5, label="Handel, Verkehr, Gastgewerbe", zorder=3)
