@@ -209,9 +209,9 @@ def main():
     ax2.plot(xi2, imp, color="#1E293B", lw=1.7, label="Importe", zorder=3)
     ax2.set_xticks(xi2); ax2.set_xticklabels(xl_bip2); ax2.set_xlim(-0.7, len(xi2) - 0.2); set_legend(ax2, ncol=3)
     m13 = ("2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08","2026-09","2026-10")
-    style_panel(ax3, "Auftragseingänge", "Volumenindex, Veränderung zum Vorjahr in %", -15, 25, range(-15, 30, 5))
-    s_ai = get_bbk("BBDE1.M.DE.Y.AEA1.A2P300000.F.C.I21.A", 13, yoy=True)
-    s_ab = get_bbk("BBDE1.M.DE.Y.AEA1.P2XF02000.B2.C.I21.A", 13, yoy=True)
+    style_panel(ax3, "Auftragseingänge", "Volumenindex, Veränderung zum Vorjahr in % (kalenderbereinigt)", -15, 25, range(-15, 30, 5))
+    s_ai = get_bbk("BBDE1.M.DE.W.AEA1.A2P300000.F.C.I21.A", 13, yoy=True)
+    s_ab = get_bbk("BBDE1.M.DE.W.AEA1.P2XF02000.B2.C.I21.A", 13, yoy=True)
     if s_ai.empty and s_ab.empty:
         s_ai = pd.Series((-0.5,0.2,3.8,5.5,5.4,0.8,-3.5,2.2,-3.2,-0.5,10.5,11.4,3.7), index=m13)
         s_ab = pd.Series((2.5,0.5,18.2,6.2,5.8,4.1,9.5,1.2,21.0,2.5,4.1,4.6,5.2), index=m13)
@@ -224,10 +224,10 @@ def main():
     mark_end(ax3, idx3, s_ab.values, "#D97706", off=1.2)
     ax3.set_xlim(-0.5, len(idx3) + 0.5); set_legend(ax3, ncol=2)
 
-    style_panel(ax4, "Produktion & Einzelhandelsumsätze", "Real, Veränderung zum Vorjahr in %", -8, 8, range(-8, 10, 2))
-    s_pi = get_bbk("BBDE1.M.DE.Y.BAA1.A2P300000.G.C.I21.A", 13, yoy=True)
-    s_pb = get_bbk("BBDE1.M.DE.Y.BAA1.N2F000000.G.C.I21.A", 13, yoy=True)
-    s_eh = get_bbk("BBDE1.M.DE.Y.GUA1.N2G470000.A.C.I21.A", 13, yoy=True)
+    style_panel(ax4, "Produktion & Einzelhandelsumsätze", "Real, Veränderung zum Vorjahr in % (kalenderbereinigt)", -8, 8, range(-8, 10, 2))
+    s_pi = get_bbk("BBDE1.M.DE.W.BAA1.A2P300000.G.C.I21.A", 13, yoy=True)
+    s_pb = get_bbk("BBDE1.M.DE.W.BAA1.N2F000000.G.C.I21.A", 13, yoy=True)
+    s_eh = get_bbk("BBDE1.M.DE.W.GUA1.N2G470000.A.C.I21.A", 13, yoy=True)
     if s_pi.empty and s_pb.empty and s_eh.empty:
         s_pi = pd.Series((0.6,-4.1,-0.3,-2.1,-0.6,-2.2,1.6,-4.1,-1.2,0.6,1.0,1.4,-2.6), index=m13)
         s_pb = pd.Series((-0.5,-6.9,-3.2,-1.0,-2.1,-1.4,-1.2,-1.9,-2.4,-0.5,-1.8,0.8,1.1), index=m13)
@@ -244,7 +244,7 @@ def main():
     mark_end(ax4, idx4, s_eh.values, "#059669", off=-0.45)
     ax4.set_xlim(-0.5, len(idx4) + 0.5); set_legend(ax4, ncol=3)
 
-    style_panel(ax5, "Leistungsbilanzsaldo", "Monatlicher Saldo in Mrd. Euro", 0, 35, range(0, 40, 5), z=False)
+    style_panel(ax5, "Leistungsbilanzsaldo", "Monatlicher Saldo in Mrd. Euro (Originalwerte)", 0, 35, range(0, 40, 5), z=False)
     s_lb = get_bbk("BBFBOPV.M.N.DE.W1.S1.S1.T.B.CA._Z._Z._Z.EUR._T._X.N.ALL", 13, 0.001)
     if s_lb.empty: s_lb = pd.Series((12.3,15.4,19.5,19.0,21.8,21.9,19.6,19.0,16.0,12.7,15.3,10.1,10.5), index=m13)
     s_lb = s_lb.tail(13)
@@ -254,8 +254,8 @@ def main():
             ax5.text(b.get_x()+b.get_width()/2, b.get_height()+0.6, f"{b.get_height():.1f}".replace(".",","), ha="center", fontsize=7.5, color="#1E3A8A", fontweight="bold")
     set_legend(ax5, ncol=1)
 
-    style_panel(ax6, "Arbeitslosigkeit und Inflation", "Quote bzw. Veränderung zum Vorjahr in %", 0, 8, range(0, 10, 2), z=False)
-    s_al = get_bbk("BBDL1.M.DE.Y.UNE.UBA000.A0000.A01.D00.0.R00.A", 13)
+    style_panel(ax6, "Arbeitslosigkeit und Inflation", "Quote bzw. Veränderung zum Vorjahr in % (Originalwerte)", 0, 8, range(0, 10, 2), z=False)
+    s_al = get_bbk("BBDL1.M.DE.N.UNE.UBA000.A0000.A01.D00.0.R00.A", 13)
     s_hv = get_bbk("BBDP1.M.DE.N.HVPI.C.A00000.VGJ.LV", 13)
     if s_al.empty and s_hv.empty:
         s_al = pd.Series((6.4,6.4,6.3,6.2,6.2,6.3,6.4,6.3,6.2,6.1,6.2,6.6,6.5), index=m13)
