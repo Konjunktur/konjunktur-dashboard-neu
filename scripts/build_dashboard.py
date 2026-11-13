@@ -296,7 +296,7 @@ def main():
     fig.text(0.95, 0.015, "T.H.", ha="right", fontsize=8, color="#94A3B8")
 
     plt.savefig("output/dashboard.png", dpi=300)
-        fig.canvas.draw()
+    fig.canvas.draw()
     renderer = fig.canvas.get_renderer()
     einzel_grafiken = [
         (ax1, "output/01_bip_entstehung.png"),
