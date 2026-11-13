@@ -228,6 +228,16 @@ def main():
     if s_eh.empty: s_eh = pd.Series((2.0,4.8,4.2,3.8,3.5,5.7,3.8,1.6,1.1,2.0,1.4,2.5,1.1), index=m13)
     idx4 = sorted(set(s_pi.index) | set(s_pb.index) | set(s_eh
 
+
+    style_panel(ax4, "Produktion & Einzelhandelsumsätze", "Real, Veränderung zum Vorjahr in %", -8, 8, range(-8, 10, 2))
+    s_pi = get_bbk("BBDE1.M.DE.Y.BPA1.A2P000000.G.C.I21.A", 13)
+    s_pb = get_bbk("BBDE1.M.DE.Y.BPA1.F00000000.G.C.I21.A", 13)
+    s_eh = get_bbk("BBDE1.M.DE.Y.BVA1.G47000000.G.C.I21.A", 13)
+    if s_pi.empty: s_pi = pd.Series((0.6,-4.1,-0.3,-2.1,-0.6,-2.2,1.6,-4.1,-1.2,0.6,1.0,1.4,-2.6), index=m13)
+    if s_pb.empty: s_pb = pd.Series((-0.5,-6.9,-3.2,-1.0,-2.1,-1.4,-1.2,-1.9,-2.4,-0.5,-1.8,0.8,1.1), index=m13)
+    if s_eh.empty: s_eh = pd.Series((2.0,4.8,4.2,3.8,3.5,5.7,3.8,1.6,1.1,2.0,1.4,2.5,1.1), index=m13)
+    idx4 = sorted(set(s_pi.index) | set(s_pb.index) | set(s_eh
+
     s_pi, s_pb, s_eh = s_pi.reindex(idx4), s_pb.reindex(idx4), s_eh.reindex(idx4)
     ax4.plot(idx4, s_pi.values, color="#1E3A8A", lw=2.1, marker="o", ms=3, label="Industrieproduktion")
     ax4.plot(idx4, s_pb.values, color="#D97706", lw=2.1, marker="o", ms=3, label="Bauproduktion")
