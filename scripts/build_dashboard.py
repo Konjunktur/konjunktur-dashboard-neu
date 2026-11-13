@@ -9,7 +9,7 @@ D_USER = os.environ.get("DESTATIS_USER", "")
 D_PASS = os.environ.get("DESTATIS_PASS", "")
 G_URL = "https://destatis.de"
 
-def get_bbk(key, n=13, scale=1.0):
+def get_bbk(key, n=12, scale=1.0):
     flow, k = key.split(".", 1)
     url = f"https://bundesbank.de{flow}/{k}?format=csv&lang=de"
     try:
@@ -172,13 +172,13 @@ def main():
     ax2.plot(xi2, imp, color="#1E293B", lw=1.7, label="Importe", zorder=3)
     ax2.set_xticks(xi2); ax2.set_xticklabels(xl_bip2); ax2.set_xlim(-0.7, len(xi2) - 0.2); set_legend(ax2, ncol=3)
 
-    m13 = ("2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08","2026-09","2026-10")
+    m12 = ("2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08","2026-09","2026-10")
     style_panel(ax3, "Auftragseingänge", "Volumenindex, Veränderung zum Vorjahr in %", -15, 25, range(-15, 30, 5))
-    s_ai = get_bbk("BBDE1.M.DE.Y.BAA1.A2P000000.G.C.I21.A")
-    s_ab = get_bbk("BBDE1.M.DE.Y.BAA1.F00000000.G.C.I21.A")
-    if s_ai.empty: s_ai = pd.Series((-0.5,10.5,11.4,3.7,2.1,1.5,0.8,1.2,1.9,0.5,-0.4,1.1,1.4), index=m13)
-    if s_ab.empty: s_ab = pd.Series((2.5,4.1,4.6,5.2,3.8,4.1,2.9,3.4,2.1,1.8,2.5,3.0,2.8), index=m13)
-    idx3 = sorted(set(s_ai.index) | set(s_ab.index))[-13:]
+    s_ai = get_bbk("BBDE1.M.DE.Y.BAA1.A2P000000.G.C.I21.A", n=12)
+    s_ab = get_bbk("BBDE1.M.DE.Y.BAA1.F00000000.G.C.I21.A", n=12)
+    if s_ai.empty: s_ai = pd.Series((10.5,11.4,3.7,2.1,1.5,0.8,1.2,1.9,0.5,-0.4,1.1,1.4), index=m12)
+    if s_ab.empty: s_ab = pd.Series((4.1,4.6,5.2,3.8,4.1,2.9,3.4,2.1,1.8,2.5,3.0,2.8), index=m12)
+    idx3 = sorted(set(s_ai.index) | set(s_ab.index))[-12:]
     s_ai, s_ab = s_ai.reindex(idx3), s_ab.reindex(idx3)
     ax3.plot(idx3, s_ai.values, color="#1E3A8A", lw=2.1, marker="o", ms=3, label="Auftragseingang Industrie")
     ax3.plot(idx3, s_ab.values, color="#D97706", lw=2.1, marker="o", ms=3, label="Auftragseingang Bauwirtschaft")
@@ -186,13 +186,13 @@ def main():
     ax3.set_xlim(-0.5, len(idx3) + 0.5); set_legend(ax3, ncol=2)
 
     style_panel(ax4, "Produktion & Einzelhandelsumsätze", "Real, Veränderung zum Vorjahr in %", -8, 8, range(-8, 10, 2))
-    s_pi = get_bbk("BBDE1.M.DE.Y.BPA1.A2P000000.G.C.I21.A")
-    s_pb = get_bbk("BBDE1.M.DE.Y.BPA1.F00000000.G.C.I21.A")
-    s_eh = get_bbk("BBDE1.M.DE.Y.BVA1.G47000000.G.C.I21.A")
-    if s_pi.empty: s_pi = pd.Series((0.6,1.0,1.4,-2.6,-1.1,-0.5,0.2,0.4,0.8,-0.3,-0.6,0.2,0.5), index=m13)
-    if s_pb.empty: s_pb = pd.Series((-0.5,-1.8,0.8,1.1,0.9,1.4,1.2,0.8,1.5,1.1,0.9,1.3,1.2), index=m13)
-    if s_eh.empty: s_eh = pd.Series((2.0,1.4,2.5,1.1,1.5,1.8,1.4,1.6,2.1,1.7,1.3,1.5,1.6), index=m13)
-    idx4 = sorted(set(s_pi.index) | set(s_pb.index) | set(s_eh.index))[-13:]
+    s_pi = get_bbk("BBDE1.M.DE.Y.BPA1.A2P000000.G.C.I21.A", n=12)
+    s_pb = get_bbk("BBDE1.M.DE.Y.BPA1.F00000000.G.C.I21.A", n=12)
+    s_eh = get_bbk("BBDE1.M.DE.Y.BVA1.G47000000.G.C.I21.A", n=12)
+    if s_pi.empty: s_pi = pd.Series((1.0,1.4,-2.6,-1.1,-0.5,0.2,0.4,0.8,-0.3,-0.6,0.2,0.5), index=m12)
+    if s_pb.empty: s_pb = pd.Series((-1.8,0.8,1.1,0.9,1.4,1.2,0.8,1.5,1.1,0.9,1.3,1.2), index=m12)
+    if s_eh.empty: s_eh = pd.Series((1.4,2.5,1.1,1.5,1.8,1.4,1.6,2.1,1.7,1.3,1.5,1.6), index=m12)
+    idx4 = sorted(set(s_pi.index) | set(s_pb.index) | set(s_eh.index))[-12:]
     s_pi, s_pb, s_eh = s_pi.reindex(idx4), s_pb.reindex(idx4), s_eh.reindex(idx4)
     ax4.plot(idx4, s_pi.values, color="#1E3A8A", lw=2.1, marker="o", ms=3, label="Produktion Industrie")
     ax4.plot(idx4, s_pb.values, color="#D97706", lw=2.1, marker="o", ms=3, label="Produktion Bauhauptgewerbe")
@@ -201,30 +201,29 @@ def main():
     ax4.set_xlim(-0.5, len(idx4) + 0.5); set_legend(ax4, ncol=2)
 
     style_panel(ax5, "Arbeitsmarkt", "Erwerbstätige & Arbeitslose, Veränderung zum Vorjahr in Tsd.", -400, 600, range(-400, 800, 200))
-    s_et = get_bbk("BBDE1.M.DE.Y.BGA1.000000000.G.A.I00.A")
-    s_al = get_bbk("BBDE1.M.DE.Y.BGA2.000000000.G.A.I00.A")
-    if s_et.empty: s_et = pd.Series((85,72,60,48,35,28,22,18,15,10,5,12,20), index=m13)
-    if s_al.empty: s_al = pd.Series((185,178,170,162,155,148,140,132,125,118,110,102,95), index=m13)
-    idx5 = sorted(set(s_et.index) | set(s_al.index))[-13:]
+    s_et = get_bbk("BBDE1.M.DE.Y.BGA1.000000000.G.A.I00.A", n=12)
+    s_al = get_bbk("BBDE1.M.DE.Y.BGA2.000000000.G.A.I00.A", n=12)
+    if s_et.empty: s_et = pd.Series((72,60,48,35,28,22,18,15,10,5,12,20), index=m12)
+    if s_al.empty: s_al = pd.Series((178,170,162,155,148,140,132,125,118,110,102,95), index=m12)
+    idx5 = sorted(set(s_et.index) | set(s_al.index))[-12:]
     s_et, s_al = s_et.reindex(idx5), s_al.reindex(idx5)
     ax5.bar(idx5, s_et.values, width=0.5, facecolor="#DBEAFE", edgecolor="#1E3A8A", lw=1.0, label="Erwerbstätige (Inland)")
     ax5.plot(idx5, s_al.values, color="#DC2626", lw=2.1, marker="o", ms=3, label="Arbeitslose (BA)")
     mark_end(ax5, idx5, s_al.values, "#DC2626", off=25); ax5.set_xlim(-0.6, len(idx5) + 0.4); set_legend(ax5, ncol=2)
 
     style_panel(ax6, "Verbraucherpreise", "Veränderung zum Vorjahr in %", -1, 5, range(-1, 6, 1))
-    s_vp = get_bbk("BBDP1.M.DE.Y.VPI.A000000000.I20.A")
-    s_vk = get_bbk("BBDP1.M.DE.Y.VPI.A00000000X.I20.A")
-    if s_vp.empty: s_vp = pd.Series((2.0,2.2,2.6,2.3,2.3,2.2,2.1,2.0,2.2,2.3,2.5,2.7,2.8), index=m13)
-    if s_vk.empty: s_vk = pd.Series((2.9,3.0,3.3,2.9,2.8,2.8,2.7,2.6,2.7,2.7,2.8,2.9,2.9), index=m13)
-    idx6 = sorted(set(s_vp.index) | set(s_vk.index))[-13:]
+    s_vp = get_bbk("BBDP1.M.DE.Y.VPI.A000000000.I20.A", n=12)
+    s_vk = get_bbk("BBDP1.M.DE.Y.VPI.A00000000X.I20.A", n=12)
+    if s_vp.empty: s_vp = pd.Series((2.2,2.6,2.3,2.3,2.2,2.1,2.0,2.2,2.3,2.5,2.7,2.8), index=m12)
+    if s_vk.empty: s_vk = pd.Series((3.0,3.3,2.9,2.8,2.8,2.7,2.6,2.7,2.7,2.8,2.9,2.9), index=m12)
+    idx6 = sorted(set(s_vp.index) | set(s_vk.index))[-12:]
     s_vp, s_vk = s_vp.reindex(idx6), s_vk.reindex(idx6)
     ax6.plot(idx6, s_vp.values, color="#1E3A8A", lw=2.1, marker="o", ms=3, label="Verbraucherpreisindex gesamt")
     ax6.plot(idx6, s_vk.values, color="#D97706", lw=2.1, marker="o", ms=3, label="Kerninflation (ohne Energie & Nahrung)")
     mark_end(ax6, idx6, s_vp.values, "#1E3A8A", off=-0.2); mark_end(ax6, idx6, s_vk.values, "#D97706", off=0.2)
     ax6.set_xlim(-0.5, len(idx6) + 0.5); set_legend(ax6, ncol=2)
 
-    fig.suptitle("Konjunktur-Dashboard Deutschland", x=0.06, y=0.975, ha="left", fontsize=16, fontweight="bold", color="#0F172A")
-    fig.text(0.06, 0.953, f"Quellen: Statistisches Bundesamt (Destatis), Deutsche Bundesbank  |  Stand: {datetime.now().strftime('%d.%m.%Y')}", fontsize=9, color="#64748B")
+    fig.text(0.06, 0.012, f"Quellen: Statistisches Bundesamt (Destatis), Deutsche Bundesbank  |  Stand: {datetime.now().strftime('%d.%m.%Y')}", fontsize=8.5, color="#64748B")
     fig.savefig("output/dashboard.png", dpi=300)
     plt.close(fig)
 
