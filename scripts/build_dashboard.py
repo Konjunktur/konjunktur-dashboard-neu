@@ -170,7 +170,7 @@ def mark_end(ax, x_vals, y_vals, col, off=0.0):
 
 def main():
     plt.rcParams.update({"font.sans-serif": "DejaVu Sans"})
-    fig, axes = plt.subplots(3, 2, figsize=(12.6, 17.8), dpi=300, facecolor="white")
+    fig, axes = plt.subplots(2, 3, figsize=(19.5, 11.8), dpi=300, facecolor="white")
     plt.subplots_adjust(left=0.06, right=0.95, top=0.92, bottom=0.06, hspace=0.55, wspace=0.20)
     ax1, ax2, ax3, ax4, ax5, ax6 = axes.flatten()
 
