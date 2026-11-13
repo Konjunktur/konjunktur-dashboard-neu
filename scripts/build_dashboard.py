@@ -16,7 +16,6 @@ def get_bbk(key, n=13, scale=1.0, yoy=False):
     try:
         r = requests.get(url, headers=headers, timeout=15)
         r.raise_for_status()
-        # Filtert alle Datenzeilen heraus, die mit einem Datum wie YYYY-MM beginnen
         rows = []
         for line in r.text.splitlines():
             parts = line.split(";")
@@ -41,6 +40,7 @@ def get_bbk(key, n=13, scale=1.0, yoy=False):
     except Exception as e:
         print(f"Bundesbank Fehler ({key}):", repr(e))
         return pd.Series(dtype=float)
+
 
 def get_destatis(table):
     if not D_USER:
