@@ -9,24 +9,27 @@ D_USER = os.environ.get("DESTATIS_USER", "")
 D_PASS = os.environ.get("DESTATIS_PASS", "")
 G_URL = "https://destatis.de"
 
-def get_bbk(key, n=13, scale=1.0):                                                        # Zeile 12
-    flow, k = key.split(".", 1)                                                           # Zeile 13
-    url = f"https://bundesbank.de{flow}/{k}?format=csv&lang=de"# Zeile 14
-    headers = {"Accept": "text/csv"}                                                      # Zeile 15
-    try:                                                                                  # Zeile 16
-        r = requests.get(url, headers=headers, timeout=15)                                # Zeile 17
-        r.raise_for_status()                                                              # Zeile 18
-        lines = [l for l in r.text.splitlines() if ";" in l]                              # Zeile 19
-        df = pd.read_csv(io.StringIO("\n".join(lines)), sep=";")                          # Zeile 20
-        tc = next(c for c in df.columns if "TIME_PERIOD" in c)                            # Zeile 21
-        vc = next(c for c in df.columns if "OBS_VALUE" in c)                              # Zeile 22
-        df[vc] = pd.to_numeric(df[vc].astype(str).str.replace(",", "."), errors="coerce") # Zeile 23
-        df = df.dropna(subset=[tc, vc]).tail(n)                                           # Zeile 24
-        vals = df[vc].astype(float) * scale                                               # Zeile 25
-        return pd.Series(vals.values, index=df[tc].values)                                # Zeile 26
-    except Exception as e:                                                                # Zeile 27
-        print(f"Bundesbank Fehler ({key}):", e)                                           # Zeile 28
-        return pd.Series(dtype=float)                                                     # Zeile 29
+def get_bbk(key, n=13, scale=1.0, yoy=False):
+    flow, k = key.split(".", 1)
+    url = f"https://api.statistiken.bundesbank.de/rest/data/{flow}/{k}?format=sdmx_csv"
+    try:
+        r = requests.get(url, timeout=15)
+        r.raise_for_status()
+        df = pd.read_csv(io.StringIO(r.text), sep=",")
+        tc = next(c for c in df.columns if "TIME_PERIOD" in c)
+        vc = next(c for c in df.columns if "OBS_VALUE" in c)
+        df[vc] = pd.to_numeric(df[vc], errors="coerce")
+        df = df.dropna(subset=[tc, vc]).sort_values(tc)
+        s = pd.Series(df[vc].values, index=df[tc].values)
+        if yoy:
+            s = s.pct_change(12) * 100
+            s = s.dropna()
+        else:
+            s = s * scale
+        return s.tail(n)
+    except Exception as e:
+        print(f"Bundesbank Fehler ({key}):", e)
+        return pd.Series(dtype=float)
 
 def get_destatis(table):
     if not D_USER or not D_PASS:
@@ -214,7 +217,8 @@ def main():
     if s_ai.empty: s_ai = pd.Series((-0.5,0.2,3.8,5.5,5.4,0.8,-3.5,2.2,-3.2,-0.5,10.5,11.4,3.7), index=m13)
     if s_ab.empty: s_ab = pd.Series((2.5,0.5,18.2,6.2,5.8,4.1,9.5,1.2,21.0,2.5,4.1,4.6,5.2), index=m13)
     idx3 = sorted(set(s_ai.index) | set(s_ab.index))[-13:]
-    s_ai, s_ab = s_ai.reindex(idx3), s_ab.reindex(idx3)
+    s_ai = get_bbk("BBDE1.M.DE.Y.BAA1.A2P000000.G.C.I21.A", 13, yoy=True)
+    s_ab = get_bbk("BBDE1.M.DE.Y.BAA1.F00000000.G.C.I21.A", 13, yoy=True)    
     ax3.plot(idx3, s_ai.values, color="#1E3A8A", lw=2.1, marker="o", ms=3, label="Auftragseingang Industrie")
     ax3.plot(idx3, s_ab.values, color="#D97706", lw=2.1, marker="o", ms=3, label="Auftragseingang Bauwirtschaft")
     mark_end(ax3, idx3, s_ai.values, "#1E3A8A", off=-1.2)
@@ -229,7 +233,10 @@ def main():
     if s_pb.empty: s_pb = pd.Series((-0.5,-6.9,-3.2,-1.0,-2.1,-1.4,-1.2,-1.9,-2.4,-0.5,-1.8,0.8,1.1), index=m13)
     if s_eh.empty: s_eh = pd.Series((2.0,4.8,4.2,3.8,3.5,5.7,3.8,1.6,1.1,2.0,1.4,2.5,1.1), index=m13)
     idx4 = sorted(set(s_pi.index) | set(s_pb.index) | set(s_eh.index))[-13:]
-    s_pi, s_pb, s_eh = s_pi.reindex(idx4), s_pb.reindex(idx4), s_eh.reindex(idx4)
+    s_pi = get_bbk("BBDE1.M.DE.Y.BPA1.A2P000000.G.C.I21.A", 13, yoy=True)
+    s_pb = get_bbk("BBDE1.M.DE.Y.BPA1.F00000000.G.C.I21.A", 13, yoy=True)
+    s_eh = get_bbk("BBDE1.M.DE.Y.BVA1.G47000000.G.C.I21.A", 13, yoy=True)
+    
     ax4.plot(idx4, s_pi.values, color="#1E3A8A", lw=2.1, marker="o", ms=3, label="Industrieproduktion")
     ax4.plot(idx4, s_pb.values, color="#D97706", lw=2.1, marker="o", ms=3, label="Bauproduktion")
     ax4.plot(idx4, s_eh.values, color="#059669", lw=2.1, marker="o", ms=3, label="Einzelhandelsumsätze")
