@@ -213,8 +213,8 @@ def main():
     s_ai = get_bbk("BBDE1.M.DE.W.AEA1.A2P300000.F.C.I21.A", 13, yoy=True)
     s_ab = get_bbk("BBDE1.M.DE.W.AEA1.P2XF02000.B2.C.I21.A", 13, yoy=True)
     if s_ai.empty and s_ab.empty:
-        s_ai = pd.Series((-0.5,0.2,3.8,5.5,5.4,0.8,-3.5,2.2,-3.2,-0.5,10.5,11.4,3.7), index=m13)
-        s_ab = pd.Series((2.5,0.5,18.2,6.2,5.8,4.1,9.5,1.2,21.0,2.5,4.1,4.6,5.2), index=m13)
+        s_ai = get_bbk("BBDE1.M.DE.N.AEA1.A2P300000.F.C.I21.A", 13, yoy=True)
+        s_ab = get_bbk("BBDE1.M.DE.N.AEA1.P2XF02000.B2.C.I21.A", 13, yoy=True)
     idx3 = sorted(set(s_ai.index) | set(s_ab.index))[-13:]
     s_ai = s_ai.reindex(idx3)
     s_ab = s_ab.reindex(idx3)
