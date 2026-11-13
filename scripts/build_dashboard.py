@@ -12,15 +12,18 @@ G_URL = "https://destatis.de"
 def get_bbk(key, n=13, scale=1.0):
     flow, k = key.split(".", 1)
     url = f"https://bundesbank.de{flow}/{k}?format=csv&lang=de"
+    headers = {"Accept": "text/csv", "User-Agent": "Mozilla/5.0"}
     try:
-        r = requests.get(url, timeout=10)
+        r = requests.get(url, headers=headers, timeout=15)
+        r.encoding = "utf-8"
         df = pd.read_csv(io.StringIO(r.text), sep=";")
         tc = next(c for c in df.columns if "TIME_PERIOD" in c)
         vc = next(c for c in df.columns if "OBS_VALUE" in c)
-        df = df.dropna(subset=[tc, vc]).tail(n)
-        vals = df[vc].astype(str).str.replace(",", ".").astype(float) * scale
-        return pd.Series(vals.values, index=df[tc].values)
-    except Exception:
+        df["VAL"] = pd.to_numeric(df[vc].astype(str).str.replace(",", ".").str.strip(), errors="coerce")
+        df = df.dropna(subset=[tc, "VAL"]).tail(n)
+        return pd.Series(df["VAL"].values * scale, index=df[tc].astype(str).str.strip().values)
+    except Exception as e:
+        print(f"Bundesbank Fehler ({key}): {e}")
         return pd.Series(dtype=float)
 
 def get_destatis(table):
