@@ -25,15 +25,29 @@ def get_bbk(key, n=12, scale=1.0):
 
 def get_destatis(table):
     if not D_USER or not D_PASS:
+        print("Destatis Hinweis: DESTATIS_USER oder DESTATIS_PASS nicht gesetzt.")
         return pd.DataFrame()
-    p = {"username": D_USER, "password": D_PASS, "name": table, "area": "all", "compress": "false", "format": "ffcsv", "language": "de"}
+    headers = {
+        "username": D_USER,
+        "password": D_PASS,
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+    data = {
+        "name": table,
+        "area": "all",
+        "compress": "false",
+        "format": "ffcsv",
+        "language": "de"
+    }
     try:
-        r = requests.get(G_URL, params=p, timeout=30)
+        r = requests.post(G_URL, headers=headers, data=data, timeout=15)
         r.encoding = "utf-8"
         if r.status_code != 200 or len(r.text) < 200 or "Fehler" in r.text[:300]:
+            print(f"Destatis Status {r.status_code} ({table}):", r.text[:250])
             return pd.DataFrame()
         return pd.read_csv(io.StringIO(r.text), sep=";", decimal=",")
-    except Exception:
+    except Exception as e:
+        print(f"Destatis Fehler ({table}):", e)
         return pd.DataFrame()
 
 def _extract_valid_series(df, filters):
@@ -133,10 +147,10 @@ def main():
     bip_r, pg, bau, hvg = build_bip_array(s_bip_r, yrs1, qtrs1), build_bip_array(s_pg, yrs1, qtrs1), build_bip_array(s_bau, yrs1, qtrs1), build_bip_array(s_hvg, yrs1, qtrs1)
     style_panel(ax1, "Bruttoinlandsprodukt: Entstehung", "Veränderung zum Vorjahr in % (preisbereinigt, Originalwerte)", -10, 8, range(-10, 10, 2))
     if not bip_r or all(np.isnan(bip_r)):
-        bip_r = (3.9,1.8,-0.9,-0.5,0.2,np.nan,-0.8,-1.3,-1.0,-1.1,-0.2,-0.4,-0.2,0.1,0.3,0.3,0.6,0.4,0.5,0.6)
-        pg    = (4.5,0.8,-2.1,-3.1,-0.8,np.nan,-2.0,-3.2,-3.5,-3.8,-3.1,-2.9,-2.5,-1.5,-0.9,-0.2,0.4,0.2,0.3,0.5)
-        bau   = (-1.5,-3.2,-2.5,-3.8,-0.5,np.nan,-2.8,-2.4,-2.9,-3.5,-4.1,-3.9,-3.6,-2.1,-1.2,0.1,0.8,0.5,0.7,0.9)
-        hvg   = (4.8,3.8,-1.2,0.4,0.9,np.nan,-1.5,-1.8,-1.2,0.2,0.5,0.6,0.4,1.1,1.2,0.9,0.7,0.6,0.8,0.8)
+        bip_r = (3.9,1.8,-0.9,-0.5,0.2,np.nan,-0.8,-1.3,-1.0,-1.1,-0.2,-0.4,-0.2,0.1,0.0,0.3,0.5,0.8,1.0,1.3)
+        pg    = (4.5,0.8,-2.1,-3.1,-0.8,np.nan,-2.0,-3.2,-3.5,-3.8,-3.1,-2.9,-2.5,-1.5,-0.9,-0.2,0.4,0.2,0.3,np.nan)
+        bau   = (-1.5,-3.2,-2.5,-3.8,-0.5,np.nan,-2.8,-2.4,-2.9,-3.5,-4.1,-3.9,-3.6,-2.1,-1.2,0.1,0.8,0.5,0.7,np.nan)
+        hvg   = (4.8,3.8,-1.2,0.4,0.9,np.nan,-1.5,-1.8,-1.2,0.2,0.5,0.6,0.4,1.1,1.2,0.9,0.7,0.6,0.8,np.nan)
     bars1 = ax1.bar(xi1, bip_r, width=0.52, facecolor="#DBEAFE", edgecolor="#1E3A8A", lw=1.1, label="Reales BIP", zorder=2)
     for b in bars1:
         h = b.get_height()
@@ -165,13 +179,13 @@ def main():
     xi2 = np.arange(len(xl_bip2))
     bip_n, kp, ks, aus, binv, exp, imp = build_bip_array(s_bip_n, yrs2, qtrs2), build_bip_array(s_kp, yrs2, qtrs2), build_bip_array(s_ks, yrs2, qtrs2), build_bip_array(s_aus, yrs2, qtrs2), build_bip_array(s_binv, yrs2, qtrs2), build_bip_array(s_exp, yrs2, qtrs2), build_bip_array(s_imp, yrs2, qtrs2)
     if not bip_n or all(np.isnan(bip_n)):
-        bip_n = (6.8,8.3,5.8,2.6,3.3,np.nan,5.7,5.3,4.9,2.7,3.1,2.6,2.0,2.8,3.0,3.4,3.8,3.2,3.4,3.5)
-        kp    = (1.5,5.6,-0.4,0.3,1.5,np.nan,-0.8,-0.2,0.1,0.2,0.1,0.4,0.6,1.2,1.8,1.6,1.8,1.4,1.5,1.6)
-        ks    = (3.1,1.6,-0.1,2.5,1.1,np.nan,-0.5,0.4,1.0,2.1,2.6,2.8,2.5,1.4,1.1,0.6,1.3,1.1,1.2,1.3)
-        aus   = (3.5,4.0,3.0,-5.5,-1.2,np.nan,3.8,2.5,1.5,-4.8,-5.9,-6.1,-5.2,-3.1,-1.8,-0.4,0.3,0.1,0.4,0.6)
-        binv  = (-1.8,-1.8,-3.1,-3.5,-0.4,np.nan,-3.1,-3.4,-3.5,-3.2,-3.8,-3.6,-3.4,-1.8,-0.9,-0.1,0.5,0.3,0.4,0.5)
-        exp   = (9.7,3.3,-0.3,-1.1,0.8,np.nan,-0.5,-1.1,-0.8,-1.5,-0.9,-1.2,-0.8,0.2,0.7,1.0,1.6,1.1,1.3,1.4)
-        imp   = (8.9,6.7,-3.0,-0.2,3.8,np.nan,-3.2,-4.1,-3.2,-2.1,-0.8,0.5,1.6,3.1,3.9,4.3,4.0,3.2,3.5,3.6)
+        bip_n = (6.8,8.3,5.8,2.6,3.3,np.nan,5.7,5.3,4.9,2.7,3.1,2.6,2.0,2.8,3.0,3.4,3.7,3.5,3.9,4.6)
+        kp    = (1.5,5.6,-0.4,0.3,1.5,np.nan,-0.8,-0.2,0.1,0.2,0.1,0.4,0.6,1.2,1.8,1.6,1.8,1.4,1.5,np.nan)
+        ks    = (3.1,1.6,-0.1,2.5,1.1,np.nan,-0.5,0.4,1.0,2.1,2.6,2.8,2.5,1.4,1.1,0.6,1.3,1.1,1.2,np.nan)
+        aus   = (3.5,4.0,3.0,-5.5,-1.2,np.nan,3.8,2.5,1.5,-4.8,-5.9,-6.1,-5.2,-3.1,-1.8,-0.4,0.3,0.1,0.4,np.nan)
+        binv  = (-1.8,-1.8,-3.1,-3.5,-0.4,np.nan,-3.1,-3.4,-3.5,-3.2,-3.8,-3.6,-3.4,-1.8,-0.9,-0.1,0.5,0.3,0.4,np.nan)
+        exp   = (9.7,3.3,-0.3,-1.1,0.8,np.nan,-0.5,-1.1,-0.8,-1.5,-0.9,-1.2,-0.8,0.2,0.7,1.0,1.6,1.1,1.3,np.nan)
+        imp   = (8.9,6.7,-3.0,-0.2,3.8,np.nan,-3.2,-4.1,-3.2,-2.1,-0.8,0.5,1.6,3.1,3.9,4.3,4.0,3.2,3.5,np.nan)
         bars2 = ax2.bar(xi2, bip_n, width=0.52, facecolor="#DBEAFE", edgecolor="#1E3A8A", lw=1.1, label="Nominales BIP", zorder=2)
     for b in bars2:
         h = b.get_height()
