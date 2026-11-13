@@ -1,4 +1,3 @@
-python
 import os, io, requests
 import pandas as pd
 import numpy as np
