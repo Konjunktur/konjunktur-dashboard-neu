@@ -296,6 +296,21 @@ def main():
     fig.text(0.95, 0.015, "T.H.", ha="right", fontsize=8, color="#94A3B8")
 
     plt.savefig("output/dashboard.png", dpi=300)
+        fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    einzel_grafiken = [
+        (ax1, "output/01_bip_entstehung.png"),
+        (ax2, "output/02_bip_verwendung.png"),
+        (ax3, "output/03_auftragseingaenge.png"),
+        (ax4, "output/04_produktion_einzelhandel.png"),
+        (ax5, "output/05_leistungsbilanz.png"),
+        (ax6, "output/06_arbeitslosigkeit_inflation.png"),
+    ]
+    for ax_item, pfad in einzel_grafiken:
+        bbox = ax_item.get_tightbbox(renderer).expanded(1.04, 1.06)
+        bbox_inches = bbox.transformed(fig.dpi_scale_trans.inverted())
+        fig.savefig(pfad, dpi=300, bbox_inches=bbox_inches, facecolor="white")
+
     plt.close()
 
 if __name__ == "__main__":
