@@ -9,19 +9,20 @@ D_USER = os.environ.get("DESTATIS_USER", "")
 D_PASS = os.environ.get("DESTATIS_PASS", "")
 G_URL = "https://destatis.de"
 
-def get_bbk(key, n=13, scale=1.0):
-    flow, k = key.split(".", 1)
-    url = f"https://bundesbank.de{flow}/{k}?format=csv&lang=de"
-    try:
-        r = requests.get(url, timeout=10)
-        df = pd.read_csv(io.StringIO(r.text), sep=";")
-        tc = next(c for c in df.columns if "TIME_PERIOD" in c)
-        vc = next(c for c in df.columns if "OBS_VALUE" in c)
-        df = df.dropna(subset=[tc, vc]).tail(n)
-        vals = df[vc].astype(str).str.replace(",", ".").astype(float) * scale
-        return pd.Series(vals.values, index=df[tc].values)
-    except Exception:
-        return pd.Series(dtype=float)
+def get_bbk(key, n=13, scale=1.0):                                                        # Zeile 12
+    flow, k = key.split(".", 1)                                                           # Zeile 13
+    url = f"https://bundesbank.de{flow}/{k}?format=csv&lang=de"# Zeile 14
+    try:                                                                                  # Zeile 15
+        r = requests.get(url, timeout=10)                                                 # Zeile 16
+        df = pd.read_csv(io.StringIO(r.text), sep=";")                                    # Zeile 17
+        tc = next(c for c in df.columns if "TIME_PERIOD" in c)                            # Zeile 18
+        vc = next(c for c in df.columns if "OBS_VALUE" in c)                              # Zeile 19
+        df[vc] = pd.to_numeric(df[vc].astype(str).str.replace(",", "."), errors="coerce") # Zeile 20
+        df = df.dropna(subset=[tc, vc]).tail(n)                                           # Zeile 21
+        vals = df[vc].astype(float) * scale                                               # Zeile 22
+        return pd.Series(vals.values, index=df[tc].values)                                # Zeile 23
+    except Exception:                                                                     # Zeile 24
+        return pd.Series(dtype=float)                                                     # Zeile 25
 
 def get_destatis(table):
     if not D_USER or not D_PASS:
