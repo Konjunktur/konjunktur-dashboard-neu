@@ -12,17 +12,21 @@ G_URL = "https://destatis.de"
 def get_bbk(key, n=13, scale=1.0):                                                        # Zeile 12
     flow, k = key.split(".", 1)                                                           # Zeile 13
     url = f"https://bundesbank.de{flow}/{k}?format=csv&lang=de"# Zeile 14
-    try:                                                                                  # Zeile 15
-        r = requests.get(url, timeout=10)                                                 # Zeile 16
-        df = pd.read_csv(io.StringIO(r.text), sep=";")                                    # Zeile 17
-        tc = next(c for c in df.columns if "TIME_PERIOD" in c)                            # Zeile 18
-        vc = next(c for c in df.columns if "OBS_VALUE" in c)                              # Zeile 19
-        df[vc] = pd.to_numeric(df[vc].astype(str).str.replace(",", "."), errors="coerce") # Zeile 20
-        df = df.dropna(subset=[tc, vc]).tail(n)                                           # Zeile 21
-        vals = df[vc].astype(float) * scale                                               # Zeile 22
-        return pd.Series(vals.values, index=df[tc].values)                                # Zeile 23
-    except Exception:                                                                     # Zeile 24
-        return pd.Series(dtype=float)                                                     # Zeile 25
+    headers = {"Accept": "text/csv"}                                                      # Zeile 15
+    try:                                                                                  # Zeile 16
+        r = requests.get(url, headers=headers, timeout=15)                                # Zeile 17
+        r.raise_for_status()                                                              # Zeile 18
+        lines = [l for l in r.text.splitlines() if ";" in l]                              # Zeile 19
+        df = pd.read_csv(io.StringIO("\n".join(lines)), sep=";")                          # Zeile 20
+        tc = next(c for c in df.columns if "TIME_PERIOD" in c)                            # Zeile 21
+        vc = next(c for c in df.columns if "OBS_VALUE" in c)                              # Zeile 22
+        df[vc] = pd.to_numeric(df[vc].astype(str).str.replace(",", "."), errors="coerce") # Zeile 23
+        df = df.dropna(subset=[tc, vc]).tail(n)                                           # Zeile 24
+        vals = df[vc].astype(float) * scale                                               # Zeile 25
+        return pd.Series(vals.values, index=df[tc].values)                                # Zeile 26
+    except Exception as e:                                                                # Zeile 27
+        print(f"Bundesbank Fehler ({key}):", e)                                           # Zeile 28
+        return pd.Series(dtype=float)                                                     # Zeile 29
 
 def get_destatis(table):
     if not D_USER or not D_PASS:
