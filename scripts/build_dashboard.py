@@ -206,6 +206,6 @@ def main():
     fig.suptitle("Konjunktur-Dashboard Deutschland", x=0.06, y=0.975, ha="left", fontsize=16, fontweight="bold", color="#0F172A")
     fig.text(0.06, 0.953, f"Quellen: Statistisches Bundesamt (Destatis), Deutsche Bundesbank  |  Stand: {datetime.now().strftime('%d.%m.%Y')}", fontsize=9, color="#64748B")
     fig.savefig("output/dashboard.png", dpi=300)
-plt.close(fig)
+    plt.close(fig)
 if name == "main":
     main()
