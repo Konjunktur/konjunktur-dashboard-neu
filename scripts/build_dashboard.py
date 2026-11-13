@@ -143,7 +143,7 @@ def main():
     ax1.plot(xi1, hvg, color="#059669", lw=1.9, marker="o", ms=2.5, label="Handel, Verkehr, Gastgewerbe", zorder=3)
     ax1.set_xticks(xi1); ax1.set_xticklabels(xl_bip1); ax1.set_xlim(-0.7, len(xi1) - 0.2); set_legend(ax1, ncol=2)
 
-    style_panel(ax2, "Bruttoinlandsprodukt: Verwendung", "Veränderung zum Vorjahr in %", -8, 12, range(-8, 14, 2))
+    style_panel(ax2, "Bruttoinlandsprodukt: Verwendung", "Veränderung zum Vorjahr in % (preisbereinigt, Originalwerte)", -8, 12, range(-8, 14, 2))
     df2 = get_destatis("81000-0012")
        # 2. BIP Verwendung (Originalwerte)
     df2 = get_destatis("81000-0012")
