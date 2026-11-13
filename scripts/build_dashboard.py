@@ -257,7 +257,7 @@ def main():
     mark_end(ax6, idx6, s_al.values, "#1E3A8A"); mark_end(ax6, idx6, s_hv.values, "#475569")
     ax6.set_xlim(-0.5, len(idx6) + 0.5); set_legend(ax6, ncol=2)
 
-    fig.text(0.06, 0.015, "Quellen: Statistisches Bundesamt (BIP: Originalwerte), Deutsche Bundesbank | Veränderung zum Vorjahr in %", fontsize=8, color="#64748B")
+    fig.text(0.06, 0.015, "Quellen: Statistisches Bundesamt, Deutsche Bundesbank (kalenderbereinigt)", fontsize=8, color="#64748B")
     fig.text(0.95, 0.015, "T.H.", ha="right", fontsize=8, color="#94A3B8")
 
     plt.savefig("output/dashboard.png", dpi=300)
