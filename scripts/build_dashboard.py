@@ -102,7 +102,6 @@ def style_panel(ax, title, sub, ymin, ymax, yticks, z=True):
     for s in ("top", "right", "left"):
         ax.spines[s].set_visible(False)
     ax.spines["bottom"].set_color("#94A3B8")
-    ax.text(1.0, -0.22, "T.H.", transform=ax.transAxes, ha="right", fontsize=7.5, color="#94A3B8")
 
 def set_legend(ax, ncol=2):
     ax.legend(loc="lower left", bbox_to_anchor=(-0.01, 1.02), ncol=ncol, frameon=False, fontsize=7.6)
@@ -229,6 +228,8 @@ def main():
     ax6.set_xlim(-0.5, len(idx6) + 0.5); set_legend(ax6, ncol=2)
 
     fig.text(0.06, 0.015, "Quellen: Statistisches Bundesamt (BIP), Deutsche Bundesbank | Kalenderbereinigt, Veränderung zum Vorjahr in %", fontsize=8, color="#64748B")
+    fig.text(0.95, 0.015, "T.H.", ha="right", fontsize=8, color="#94A3B8")
+
     plt.savefig("output/dashboard.png", dpi=300)
     plt.close()
 
