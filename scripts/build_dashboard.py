@@ -154,7 +154,7 @@ def main():
     yrs2, qtrs2 = get_dynamic_bip_axes([s_bip_n, s_kp, s_ks, s_aus, s_binv, s_exp, s_imp])
     xl_bip2 = (yrs2 + ("",) + tuple(f"Q{q[-1]} {q[2:4]}" for q in qtrs2)) if yrs2 else tuple(f"Q{q[-1]} {q[2:4]}" for q in qtrs2)
     xi2 = np.arange(len(xl_bip2))
-        bip_n, kp, ks, aus, binv, exp, imp = build_bip_array(s_bip_n, yrs2, qtrs2), build_bip_array(s_kp, yrs2, qtrs2), build_bip_array(s_ks, yrs2, qtrs2), build_bip_array(s_aus, yrs2, qtrs2), build_bip_array(s_binv, yrs2, qtrs2), build_bip_array(s_exp, yrs2, qtrs2), build_bip_array(s_imp, yrs2, qtrs2)
+    bip_n, kp, ks, aus, binv, exp, imp = build_bip_array(s_bip_n, yrs2, qtrs2), build_bip_array(s_kp, yrs2, qtrs2), build_bip_array(s_ks, yrs2, qtrs2), build_bip_array(s_aus, yrs2, qtrs2), build_bip_array(s_binv, yrs2, qtrs2), build_bip_array(s_exp, yrs2, qtrs2), build_bip_array(s_imp, yrs2, qtrs2)
     if not bip_n or all(np.isnan(bip_n)):
         bip_n = (6.8,8.3,5.8,2.6,3.3,np.nan,5.7,5.3,4.9,2.7,3.1,2.6,2.0,2.8,3.0,3.4,3.8,3.2,3.4,3.5)
         kp    = (1.5,5.6,-0.4,0.3,1.5,np.nan,-0.8,-0.2,0.1,0.2,0.1,0.4,0.6,1.2,1.8,1.6,1.8,1.4,1.5,1.6)
