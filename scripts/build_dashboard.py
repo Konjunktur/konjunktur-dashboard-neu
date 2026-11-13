@@ -11,16 +11,27 @@ G_URL = "https://destatis.de"
 
 def get_bbk(key, n=13, scale=1.0, yoy=False):
     flow, k = key.split(".", 1)
-    url = f"https://api.statistiken.bundesbank.de/rest/data/{flow}/{k}?format=sdmx_csv"
+    url = f"https://bundesbank.de{flow}/{k}?format=bbk_csv&lang=de"
+    headers = {"User-Agent": "Mozilla/5.0"}
     try:
-        r = requests.get(url, timeout=15)
+        r = requests.get(url, headers=headers, timeout=15)
         r.raise_for_status()
-        df = pd.read_csv(io.StringIO(r.text), sep=",")
-        tc = next(c for c in df.columns if "TIME_PERIOD" in c)
-        vc = next(c for c in df.columns if "OBS_VALUE" in c)
-        df[vc] = pd.to_numeric(df[vc], errors="coerce")
-        df = df.dropna(subset=[tc, vc]).sort_values(tc)
-        s = pd.Series(df[vc].values, index=df[tc].values)
+        # Filtert alle Datenzeilen heraus, die mit einem Datum wie YYYY-MM beginnen
+        rows = []
+        for line in r.text.splitlines():
+            parts = line.split(";")
+            if len(parts) >= 2 and len(parts[0].strip()) == 7 and parts[0].strip()[4] == "-":
+                datum = parts[0].strip()
+                val_str = parts[1].strip().replace(",", ".")
+                try:
+                    rows.append((datum, float(val_str)))
+                except ValueError:
+                    continue
+        if not rows:
+            print(f"BBK Keine Datenzeilen ({key}) | Vorschau:", r.text[:150].replace("\n", " "))
+            return pd.Series(dtype=float)
+        df = pd.DataFrame(rows, columns=["T", "V"]).drop_duplicates(subset=["T"]).sort_values("T")
+        s = pd.Series(df["V"].values, index=df["T"].values)
         if yoy:
             s = s.pct_change(12) * 100
             s = s.dropna()
@@ -28,7 +39,7 @@ def get_bbk(key, n=13, scale=1.0, yoy=False):
             s = s * scale
         return s.tail(n)
     except Exception as e:
-        print(f"Bundesbank Fehler ({key}):", e)
+        print(f"Bundesbank Fehler ({key}):", repr(e))
         return pd.Series(dtype=float)
 
 def get_destatis(table):
