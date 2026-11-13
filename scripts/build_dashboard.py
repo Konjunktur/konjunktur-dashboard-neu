@@ -71,7 +71,6 @@ def get_destatis(table):
         lines = csv_text.splitlines()
         start_idx = next((i for i, l in enumerate(lines) if l.count(";") >= 5), 0)
         return pd.read_csv(io.StringIO("\n".join(lines[start_idx:])), sep=";", decimal=",")
-Use code with caution.
 AI responses may include mistakes. Learn more
 
     except Exception as e:
