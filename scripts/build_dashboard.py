@@ -227,13 +227,14 @@ def main():
     ax3.set_xlim(-0.5, len(idx3) + 0.5); set_legend(ax3, ncol=2)
 
     style_panel(ax4, "Produktion & Einzelhandelsumsätze", "Real, Veränderung zum Vorjahr in %", -8, 8, range(-8, 10, 2))
-    s_pi = get_bbk("BBDE1.M.DE.Y.BPA1.A2P000000.G.C.I21.A", 13, yoy=True)
-    s_pb = get_bbk("BBDE1.M.DE.Y.BPA1.F00000000.G.C.I21.A", 13, yoy=True)
-    s_eh = get_bbk("BBDE1.M.DE.Y.BVA1.G47000000.G.C.I21.A", 13, yoy=True)
+    s_pi = get_bbk("BBDE1.M.DE.W.BAA1.A2P300000.G.C.I21.A", 13, yoy=True)
+    s_pb = get_bbk("BBDE1.M.DE.W.BAA1.N2F000000.G.C.I21.A", 13, yoy=True)
+    s_eh = get_bbk("BBDE1.M.DE.W.GUA1.N2G470000.A.C.I21.A", 13, yoy=True)
+  
     if s_pi.empty and s_pb.empty and s_eh.empty:
         s_pi = pd.Series((0.6,-4.1,-0.3,-2.1,-0.6,-2.2,1.6,-4.1,-1.2,0.6,1.0,1.4,-2.6), index=m13)
         s_pb = pd.Series((-0.5,-6.9,-3.2,-1.0,-2.1,-1.4,-1.2,-1.9,-2.4,-0.5,-1.8,0.8,1.1), index=m13)
-        s_eh = pd.Series((2.0,4.8,4.2,3.8,3.5,5.7,3.8,1.6,1.1,2.0,1.4,2.5,1.1), index=m13)
+        s_eh = pd.Series((2.0,4.8,4.2,3.8,3.5,5.7,3.8,1.6,1.1,2.0,1.4,2.5,1.1), index=m13)   
     idx4 = sorted(set(s_pi.index) | set(s_pb.index) | set(s_eh.index))[-13:]
     s_pi = s_pi.reindex(idx4)
     s_pb = s_pb.reindex(idx4)
@@ -258,7 +259,7 @@ def main():
 
     style_panel(ax6, "Arbeitslosigkeit und Inflation", "Quote bzw. Veränderung zum Vorjahr in %", 0, 8, range(0, 10, 2), z=False)
     s_al = get_bbk("BBDE1.M.DE.S.ABA1.A00000000.U.A.A00.A", 13)
-    s_hv = get_bbk("BBDP1.M.DE.N.HVPI.C.A00000.I15.A", 13, yoy=True)
+    s_hv = get_bbk("BBDP1.M.DE.N.HVPI.C.A00000.VGJ.LV", 13)
     if s_al.empty and s_hv.empty:
         s_al = pd.Series((6.4,6.4,6.3,6.2,6.2,6.3,6.4,6.3,6.2,6.1,6.2,6.6,6.5), index=m13)
         s_hv = pd.Series((2.6,2.3,2.2,2.1,2.0,1.8,2.1,2.4,2.3,2.6,2.0,2.1,2.0), index=m13)
