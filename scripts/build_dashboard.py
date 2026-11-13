@@ -172,7 +172,13 @@ def main():
         binv  = (-1.8,-1.8,-3.1,-3.5,-0.4,np.nan,-3.1,-3.4,-3.5,-3.2,-3.8,-3.6,-3.4,-1.8,-0.9,-0.1,0.5,0.3,0.4,0.5)
         exp   = (9.7,3.3,-0.3,-1.1,0.8,np.nan,-0.5,-1.1,-0.8,-1.5,-0.9,-1.2,-0.8,0.2,0.7,1.0,1.6,1.1,1.3,1.4)
         imp   = (8.9,6.7,-3.0,-0.2,3.8,np.nan,-3.2,-4.1,-3.2,-2.1,-0.8,0.5,1.6,3.1,3.9,4.3,4.0,3.2,3.5,3.6)
-    ax2.bar(xi2, bip_n, width=0.52, facecolor="#DBEAFE", edgecolor="#1E3A8A", lw=1.1, label="Nominales BIP", zorder=2)
+        bars2 = ax2.bar(xi2, bip_n, width=0.52, facecolor="#DBEAFE", edgecolor="#1E3A8A", lw=1.1, label="Nominales BIP", zorder=2)
+    for b in bars2:
+        h = b.get_height()
+        if pd.notna(h):
+            va = "bottom" if h >= 0 else "top"
+            off = 0.3 if h >= 0 else -0.3
+            ax2.text(b.get_x() + b.get_width() / 2, h + off, f"{h:.1f}".replace(".", ","), ha="center", va=va, fontsize=6.8, color="#1E3A8A", fontweight="bold", zorder=4)
     ax2.plot(xi2, kp, color="#D97706", lw=1.7, label="Privater Konsum", zorder=3)
     ax2.plot(xi2, ks, color="#64748B", lw=1.7, label="Staatskonsum", zorder=3)
     ax2.plot(xi2, aus, color="#DC2626", lw=1.7, label="Ausrüstungen", zorder=3)
