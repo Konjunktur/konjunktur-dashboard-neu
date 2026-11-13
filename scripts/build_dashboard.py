@@ -207,5 +207,5 @@ def main():
     fig.text(0.06, 0.953, f"Quellen: Statistisches Bundesamt (Destatis), Deutsche Bundesbank  |  Stand: {datetime.now().strftime('%d.%m.%Y')}", fontsize=9, color="#64748B")
     fig.savefig("output/dashboard.png", dpi=300)
     plt.close(fig)
-if name == "main":
+if __name__ == "__main__":
     main()
