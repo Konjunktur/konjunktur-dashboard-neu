@@ -69,8 +69,9 @@ def get_destatis(table):
             return pd.DataFrame()
 
         lines = csv_text.splitlines()
-        start_idx = next((i for i, l in enumerate(lines) if l.count(";") >= 5), 0)
-        return pd.read_csv(io.StringIO("\n".join(lines[start_idx:])), sep=";", decimal=",")
+        start_idx = next((i for i, l in enumerate(lines) if "STATISTIK_CODE" in l or "TIME" in l.upper()), 0)
+        return pd.read_csv(io.StringIO("\n".join(lines[start_idx:])), sep=";", decimal=",", on_bad_lines="skip")
+
     except Exception as e:
         print(f"Destatis Fehler ({table}):", e)
         return pd.DataFrame()
